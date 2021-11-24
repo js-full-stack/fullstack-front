@@ -1,0 +1,27 @@
+
+  .header {
+    display: flex;
+    align-items: center;
+   
+  }
+  .link {
+    display: inline-block;
+    text-decoration: none;
+    padding: 12px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+.link:hover {
+  color: #ffc107
+}
+
+  .activeLink {
+    color: #ffc107;
+  }
+  .nav {
+    margin-right: auto;
+  }
+  .navBar {
+    flex-wrap: nowrap;
+    }

@@ -1,0 +1,18 @@
+{
+  "state": {
+    "user": {
+      "firstName": "",
+      "lastName": "",
+      "phone": "",
+      "email": "?",
+      "password": "?",
+      "role": "?"
+    },
+    "programs": {
+      "name": "",
+      "description": "",
+      "duration": "",
+      "price": ""
+    }
+  }
+}
