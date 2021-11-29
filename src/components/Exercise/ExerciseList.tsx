@@ -41,7 +41,7 @@ const ExerciseList = observer(() => {
 
   useEffect(() => {
     exercisesStore.getAllExercises();
-  }, [exercisesStore]);
+  }, []);
   return (
     <>
       {exercisesStore.exercises.map(

@@ -21,7 +21,6 @@ const FormLogin = observer(() => {
   const navigate = useNavigate();
   const authStore = useStores().auth;
 
-  useEffect(() => {}, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

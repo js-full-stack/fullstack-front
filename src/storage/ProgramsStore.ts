@@ -12,7 +12,7 @@ const ExerciseModel = types.model({
 });
 
 // !Program model
-const ProgramModel = types.model("Program", {
+export const ProgramModel = types.model("Program", {
   name: types.string,
   description: types.string,
   price: types.number,
@@ -21,13 +21,12 @@ const ProgramModel = types.model("Program", {
   createdAt: types.string,
   updatedAt: types.string,
   author: types.model({
-    id: types.identifierNumber,
-    // firstName: types.maybe(types.string),
-    // lastName: types.maybe(types.string),
-    // email: types.maybe(types.string),
-    // phone: types.maybe(types.string),
-    // role: types.maybe(types.string),
+    firstName: types.optional(types.string, ""),
+    lastName: types.optional(types.string, ""),
+    email: types.optional(types.string, ""),
+    phone: types.optional(types.string, ""),
   }),
+  isSubscribe: types.optional(types.boolean, false),
   exercises: types.optional(types.array(ExerciseModel), []),
 });
 
@@ -56,7 +55,9 @@ export const ProgramStore = types
         });
 
         self.programs.push(data);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     // !Delete program
@@ -82,7 +83,7 @@ export const ProgramStore = types
         price,
         duration,
       });
-
+      console.log("data", data);
       const updatedData: any = self.programs.map((program) => {
         return program.id === programId ? data : program;
       });
@@ -100,12 +101,39 @@ export const ProgramStore = types
       });
     });
 
+    const subscribeUserToProgram = flow(function* (programId: number) {
+      yield axios.post("/program/subscribe/", {
+        programId,
+      });
+      const updatedProgramStatus: any = self.programs.map((program) =>
+        program.id === programId
+          ? { ...program, isSubscribe: !program.isSubscribe }
+          : program
+      );
+
+      self.programs = updatedProgramStatus;
+    });
+
+    const unsubscribeUserFromProgram = flow(function* (programId: number) {
+      yield axios.delete(`/program/unsubscribe/${programId}`);
+
+      const updatedProgramStatus: any = self.programs.map((program) =>
+        program.id === programId
+          ? { ...program, isSubscribe: !program.isSubscribe }
+          : program
+      );
+
+      self.programs = updatedProgramStatus;
+    });
+
     return {
       addProgram,
       deleteProgram,
       updateProgram,
       getProgramById,
       getAllPrograms,
+      subscribeUserToProgram,
+      unsubscribeUserFromProgram,
     };
   });
 

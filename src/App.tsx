@@ -22,8 +22,11 @@ const ExerciseEditor = lazy(
 );
 
 const App = observer(() => {
+  
   const authStore = useStores().auth;
+
   useEffect(() => {
+    // authStore.getAllUsers();
     authStore.getCurrentUser();
   }, []);
   return (

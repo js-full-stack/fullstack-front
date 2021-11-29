@@ -1,8 +1,8 @@
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-
-import { useEffect, useState } from "react";
+import Stack from "react-bootstrap/Stack";
+import { useState } from "react";
 import { useStores } from "../../connection/useStore";
 import { observer } from "mobx-react-lite";
 
@@ -42,8 +42,8 @@ const ProgramEditor = observer(({ show, setShow }: ChildProps) => {
     setDuration(Number(value));
   };
 
-  const onUpdateProgram = (id: number) => {
-    programStore.updateProgram(id, {
+  const onUpdateProgram = async (id: number) => {
+    await programStore.updateProgram(id, {
       name,
       description,
       price,
@@ -51,11 +51,15 @@ const ProgramEditor = observer(({ show, setShow }: ChildProps) => {
     });
   };
 
+  const onResetChanges = () => {
+    setShow(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (programStore.currentProgram) {
-      onUpdateProgram(programStore.currentProgram?.id);
+      onUpdateProgram(programStore.currentProgram.id);
     }
     await programStore.getAllPrograms();
     setShow(false);
@@ -104,9 +108,29 @@ const ProgramEditor = observer(({ show, setShow }: ChildProps) => {
                 defaultValue={programStore.currentProgram?.duration}
               />
             </Form.Group>
-            <Button variant="primary" type="submit">
+            {/* <Stack gap={2} className="col-md-5 mx-auto">
+              <Button type="submit" variant="secondary">
+                Save changes
+              </Button>
+              <Button
+                type="button"
+                onClick={setShow(false)}
+                variant="outline-secondary"
+              >
+                Cancel
+              </Button>
+            </Stack> */}
+            <Stack direction="horizontal" gap={3}>
+              <Button type="submit" variant="primary">
+                Save changes
+              </Button>
+              <Button type="button" onClick={onResetChanges} variant="danger">
+                Reset
+              </Button>
+            </Stack>
+            {/* <Button variant="primary" type="submit">
               Submit
-            </Button>
+            </Button> */}
           </Form>
         </Modal.Body>
       </Modal>

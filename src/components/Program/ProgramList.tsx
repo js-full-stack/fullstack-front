@@ -1,15 +1,20 @@
 // !Bootstrap
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
-import Form from "react-bootstrap/Form";
-//
+
+// !Other
 import Moment from "react-moment";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useStores } from "../../connection/useStore";
+
+// !Components
 import ProgramEditor from "./ProgramEditor";
 import ExerciseToProgramEditor from "./ExerciseToProgramEditor";
+import Subscriptions from "./Subscriptions";
+import AvailablePrograms from "./AvailablePrograms";
+import CouchPrograms from "./CouchPrograms";
+
 const styles = {
   buttonAdd: {
     marginBottom: 0,
@@ -28,22 +33,32 @@ const styles = {
 
 const ProgramList = observer(() => {
   const programsStore = useStores().program;
-  const exerciseStore = useStores().exercise;
   const authStore = useStores().auth;
   const [show, setShow] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   const getProgramById = async (id: number) => {
     await programsStore.getProgramById(id);
+    setShow(true)
   };
 
   useEffect(() => {
     programsStore.getAllPrograms();
-  }, [programsStore.currentProgram]);
+  }, []);
 
   return (
     <>
-      {programsStore.programs.map(
+      {authStore.currentUser?.role === "athlete" &&
+        <>
+          <Subscriptions />
+        <AvailablePrograms />
+        </>
+    }
+      {/* <CouchPrograms setShow={setShow}  
+        setShowModal={setShowModal}/> */}
+    
+
+      {authStore.currentUser?.role ==="couch" && programsStore.programs.map(
         ({
           name,
           id,
@@ -52,8 +67,8 @@ const ProgramList = observer(() => {
           price,
           createdAt,
           updatedAt,
-          author,
         }) => (
+
           <div key={id}>
             <Card border="secondary">
               <Card.Body>
@@ -72,10 +87,11 @@ const ProgramList = observer(() => {
                   <span style={styles.cardFooter}>Last update:</span>
                   <Moment format="DD MMMM YYYY, HH:mm">{updatedAt}</Moment>;
                 </small>
+          
               </Card.Footer>
             </Card>
 
-            {authStore.currentUser?.role === "couch" ? (
+         
               <>
                 <Button
                   onClick={() => {
@@ -88,10 +104,7 @@ const ProgramList = observer(() => {
                   Add exercises to program
                 </Button>
                 <Button
-                  onClick={() => {
-                    getProgramById(id);
-                    setShow(true);
-                  }}
+                  onClick={() => getProgramById(id)}
                   style={styles.button}
                   variant="warning"
                 >
@@ -105,11 +118,7 @@ const ProgramList = observer(() => {
                   Delete program
                 </Button>
               </>
-            ) : (
-              <Button style={styles.button} variant="warning">
-                Subscribe
-              </Button>
-            )}
+            
           </div>
         )
       )}
@@ -124,38 +133,5 @@ const ProgramList = observer(() => {
 
 export default ProgramList;
 
-{
-  /* <br /> */
-}
-{
-  /* <small style={styles.cardFooter} className="text-muted">
-                  <span style={styles.cardFooter}>
-                    Author: {author.firstName}
-                  </span>
-                  <span style={styles.cardFooter}>{author.lastName}</span>
-                </small> */
-}
-{
-  /* <br /> */
-}
-{
-  /* <small style={styles.cardFooter} className="text-muted"> */
-}
-{
-  /* <span style={styles.cardFooter}>Email: {author.email}</span> */
-}
-{
-  /* </small> */
-}
-{
-  /* <br /> */
-}
-{
-  /* <small style={styles.cardFooter} className="text-muted"> */
-}
-{
-  /* <span style={styles.cardFooter}>Phone: {author.phone}</span> */
-}
-{
-  /* </small> */
-}
+
+

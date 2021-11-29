@@ -6,7 +6,6 @@ import Modal from "react-bootstrap/Modal";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useStores } from "../../connection/useStore";
-import { useNavigate } from "react-router";
 
 const styles = {
   form: {
@@ -25,7 +24,6 @@ interface ChildProps {
 
 const ExerciseEditor = observer(({ show, setShow }: ChildProps) => {
   const exerciseStore = useStores().exercise;
-  const navigate = useNavigate();
 
   const [name, setName] = useState(exerciseStore.currentExercise?.name);
   const [description, setDescription] = useState(
@@ -51,10 +49,11 @@ const ExerciseEditor = observer(({ show, setShow }: ChildProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShow(false);
+
     if (exerciseStore.currentExercise) {
       onUpdateExercise(exerciseStore.currentExercise.id);
     }
+    setShow(false);
   };
 
   return (

@@ -1,22 +1,23 @@
 import axios from "axios";
-import { flow, getSnapshot, Instance, types } from "mobx-state-tree";
+import { flow, Instance, types } from "mobx-state-tree";
 import { authHeader } from "../helpers/headerAuth.utils";
 import { localStore } from "../helpers/localStorage.utils";
+import { ProgramModel } from "./ProgramsStore";
 axios.defaults.baseURL = "http://localhost:3000";
 
-export const User = types.model({
+export const UserModel = types.model({
   email: types.string,
   firstName: types.maybeNull(types.string),
   lastName: types.maybeNull(types.string),
   phone: types.maybeNull(types.string),
   role: types.maybeNull(types.string),
   id: types.maybeNull(types.identifierNumber),
-  token: types.maybeNull(types.string),
 });
 
 export const AuthStore = types
   .model({
-    currentUser: types.maybe(User),
+    currentUser: types.maybe(UserModel),
+    allUsers: types.array(UserModel),
   })
   // !Register
   .actions((self) => {
@@ -44,7 +45,6 @@ export const AuthStore = types
         email,
         password,
       });
-      // axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
       localStore.setToken(data.user.token);
 
       authHeader.set(data.user.token);
@@ -52,20 +52,36 @@ export const AuthStore = types
     });
 
     // !Logout
-    const logout = () => {
+    const logout = flow(function* () {
+      yield axios.get("/logout");
       authHeader.unset();
       localStore.removeToken();
       self.currentUser = undefined;
-    };
-    // !Get profile
+    });
+    // ! Get all users
+    const getAllUsers = flow(function* () {
+      const { data } = yield axios.get("/user");
+      self.allUsers = data;
+    });
+
+    // !Get current user
     const getCurrentUser = flow(function* () {
       const token = localStorage.getItem("token");
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       const { data } = yield axios.get("/profile");
       self.currentUser = data;
+
+      // const currentUser = self.allUsers.find((user) => user.id === data);
+      // self.currentUser = currentUser;
     });
 
-    return { register, login, logout, getCurrentUser };
+    return {
+      register,
+      login,
+      logout,
+      getAllUsers,
+      getCurrentUser,
+    };
   });
 
 export interface IAuthStore extends Instance<typeof AuthStore> {}

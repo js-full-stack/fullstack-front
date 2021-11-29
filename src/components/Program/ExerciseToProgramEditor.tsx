@@ -9,7 +9,6 @@ import ToggleButton from "react-bootstrap/ToggleButton";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useStores } from "../../connection/useStore";
-import { isDeleteExpression } from "typescript";
 
 const styles = {
   form: {
@@ -40,7 +39,6 @@ const ExerciseToProgramEditor = observer(
 
     return (
       <div>
-        TestData
         <Modal
           show={showModal}
           onHide={() => setShowModal(false)}
@@ -51,10 +49,11 @@ const ExerciseToProgramEditor = observer(
               <ToggleButtonGroup
                 type="checkbox"
                 value={value}
-                // onChange={handleChange}
+                vertical={true}
+                onChange={handleChange}
               >
-                {exerciseStore.exercises.map(({ name, id }, idx) => (
-                  <ToggleButton id="tbg-btn-1" value={idx}>
+                {exerciseStore.exercises.map(({ name, id }) => (
+                  <ToggleButton key={id} id={name} value={name}>
                     {name}
                   </ToggleButton>
                 ))}
