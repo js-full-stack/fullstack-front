@@ -9,8 +9,6 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useStores } from "../../connection/useStore";
 import { useNavigate } from "react-router";
-import { authHeader } from "../../helpers/headerAuth.utils";
-import { localStore } from "../../helpers/localStorage.utils";
 const styles = {
   form: {
     marginTop: 15,
@@ -20,7 +18,6 @@ const styles = {
 const FormLogin = observer(() => {
   const navigate = useNavigate();
   const authStore = useStores().auth;
-
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,14 +32,15 @@ const FormLogin = observer(() => {
     setPassword(value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      await authStore.login(email, password);
 
-    authStore.login(email, password);
-    const token = localStorage.getItem("token");
-
-    navigate("/program");
-    // token && navigate("/program");
+      authStore.currentUser && navigate("/program");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

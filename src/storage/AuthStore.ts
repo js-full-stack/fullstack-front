@@ -52,12 +52,12 @@ export const AuthStore = types
     });
 
     // !Logout
-    const logout = flow(function* () {
-      yield axios.get("/logout");
+    const logout = function () {
+      // yield axios.get("/logout");
       authHeader.unset();
       localStore.removeToken();
       self.currentUser = undefined;
-    });
+    };
     // ! Get all users
     const getAllUsers = flow(function* () {
       const { data } = yield axios.get("/user");

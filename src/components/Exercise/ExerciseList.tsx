@@ -2,7 +2,6 @@
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Moment from "react-moment";
-import { useNavigate } from "react-router-dom";
 
 //
 import { observer } from "mobx-react";

@@ -108,18 +108,7 @@ const ProgramEditor = observer(({ show, setShow }: ChildProps) => {
                 defaultValue={programStore.currentProgram?.duration}
               />
             </Form.Group>
-            {/* <Stack gap={2} className="col-md-5 mx-auto">
-              <Button type="submit" variant="secondary">
-                Save changes
-              </Button>
-              <Button
-                type="button"
-                onClick={setShow(false)}
-                variant="outline-secondary"
-              >
-                Cancel
-              </Button>
-            </Stack> */}
+  
             <Stack direction="horizontal" gap={3}>
               <Button type="submit" variant="primary">
                 Save changes
@@ -128,9 +117,7 @@ const ProgramEditor = observer(({ show, setShow }: ChildProps) => {
                 Reset
               </Button>
             </Stack>
-            {/* <Button variant="primary" type="submit">
-              Submit
-            </Button> */}
+    
           </Form>
         </Modal.Body>
       </Modal>

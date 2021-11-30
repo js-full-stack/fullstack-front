@@ -30,10 +30,11 @@ interface ChildProps {
 const CouchPrograms = observer(({ setShow, setShowModal }: ChildProps) => {
   const programsStore = useStores().program;
   const authStore = useStores().auth;
-
+  
   const getProgramById = async (id: number) => {
     await programsStore.getProgramById(id);
   };
+
 
   return (
     <>

@@ -7,7 +7,7 @@ import ToggleButton from "react-bootstrap/ToggleButton";
 
 //
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStores } from "../../connection/useStore";
 
 const styles = {
@@ -21,52 +21,54 @@ const styles = {
 };
 
 interface ChildProps {
-  setShowModal: any;
-  showModal: boolean;
+  show: boolean;
+  setShow: any;
 }
 
-const ExerciseToProgramEditor = observer(
-  ({ showModal, setShowModal }: ChildProps) => {
-    const exerciseStore = useStores().exercise;
-    const [value, setValue] = useState([]);
+const ExerciseToProgramEditor = observer(({ show, setShow }: ChildProps) => {
+  const exerciseStore = useStores().exercise;
+  const [value, setValue] = useState([]);
 
-    const handleChange = (val: any) => setValue(val);
+  useEffect(() => {
+    exerciseStore.getAllExercises();
+  }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setShowModal(false);
-    };
+  const handleChange = (val: any) => setValue(val);
 
-    return (
-      <div>
-        <Modal
-          show={showModal}
-          onHide={() => setShowModal(false)}
-          dialogClassName="modal-90w"
-        >
-          <Modal.Body>
-            <Form onSubmit={handleSubmit} style={styles.form}>
-              <ToggleButtonGroup
-                type="checkbox"
-                value={value}
-                vertical={true}
-                onChange={handleChange}
-              >
-                {exerciseStore.exercises.map(({ name, id }) => (
-                  <ToggleButton key={id} id={name} value={name}>
-                    {name}
-                  </ToggleButton>
-                ))}
-              </ToggleButtonGroup>
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
-            </Form>
-          </Modal.Body>
-        </Modal>
-      </div>
-    );
-  }
-);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShow(false);
+  };
+
+  return (
+    <div>
+      <Modal
+        show={show}
+        onHide={() => setShow(false)}
+        dialogClassName="modal-90w"
+      >
+        <Modal.Body>
+          <Form onSubmit={handleSubmit} style={styles.form}>
+            <ToggleButtonGroup
+              type="checkbox"
+              value={value}
+              vertical={true}
+              onChange={handleChange}
+            >
+              {exerciseStore.exercises.map(({ name, id }) => (
+                <ToggleButton key={id} id={name} value={name}>
+                  {name}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+            <Button variant="primary" type="submit">
+              Submit
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+    </div>
+  );
+});
 
 export default ExerciseToProgramEditor;

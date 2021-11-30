@@ -13,7 +13,6 @@ import ProgramEditor from "./ProgramEditor";
 import ExerciseToProgramEditor from "./ExerciseToProgramEditor";
 import Subscriptions from "./Subscriptions";
 import AvailablePrograms from "./AvailablePrograms";
-import CouchPrograms from "./CouchPrograms";
 
 const styles = {
   buttonAdd: {
@@ -37,9 +36,14 @@ const ProgramList = observer(() => {
   const [show, setShow] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  const getProgramById = async (id: number) => {
+  const updateDescription = async (id: number) => {
     await programsStore.getProgramById(id);
-    setShow(true)
+    setShow(true);
+  };
+
+  const addExerciseToProgram = async (id: number) => {
+    await programsStore.getProgramById(id);
+    setShowModal(true);
   };
 
   useEffect(() => {
@@ -48,63 +52,57 @@ const ProgramList = observer(() => {
 
   return (
     <>
-      {authStore.currentUser?.role === "athlete" &&
+      {authStore.currentUser?.role === "athlete" && (
         <>
           <Subscriptions />
-        <AvailablePrograms />
+          <AvailablePrograms />
         </>
-    }
+      )}
       {/* <CouchPrograms setShow={setShow}  
         setShowModal={setShowModal}/> */}
-    
 
-      {authStore.currentUser?.role ==="couch" && programsStore.programs.map(
-        ({
-          name,
-          id,
-          description,
-          duration,
-          price,
-          createdAt,
-          updatedAt,
-        }) => (
+      {authStore.currentUser?.role === "couch" &&
+        programsStore.programs.map(
+          ({
+            name,
+            id,
+            description,
+            duration,
+            price,
+            createdAt,
+            updatedAt,
+          }) => (
+            <div key={id}>
+              <Card border="secondary">
+                <Card.Body>
+                  <Card.Title>{name}</Card.Title>
+                  <Card.Text>Description: {description}</Card.Text>
+                  <Card.Text>Duration {duration} hours </Card.Text>
+                  <Card.Text>Price: {price}$ </Card.Text>
+                </Card.Body>
+                <Card.Footer>
+                  <small style={styles.cardFooter} className="text-muted">
+                    <span style={styles.cardFooter}>Created:</span>
+                    <Moment format="DD MMMM YYYY, HH:mm">{createdAt}</Moment>;
+                  </small>
+                  <br />
+                  <small style={styles.cardFooter} className="text-muted">
+                    <span style={styles.cardFooter}>Last update:</span>
+                    <Moment format="DD MMMM YYYY, HH:mm">{updatedAt}</Moment>;
+                  </small>
+                </Card.Footer>
+              </Card>
 
-          <div key={id}>
-            <Card border="secondary">
-              <Card.Body>
-                <Card.Title>{name}</Card.Title>
-                <Card.Text>Description: {description}</Card.Text>
-                <Card.Text>Duration {duration} hours </Card.Text>
-                <Card.Text>Price: {price}$ </Card.Text>
-              </Card.Body>
-              <Card.Footer>
-                <small style={styles.cardFooter} className="text-muted">
-                  <span style={styles.cardFooter}>Created:</span>
-                  <Moment format="DD MMMM YYYY, HH:mm">{createdAt}</Moment>;
-                </small>
-                <br />
-                <small style={styles.cardFooter} className="text-muted">
-                  <span style={styles.cardFooter}>Last update:</span>
-                  <Moment format="DD MMMM YYYY, HH:mm">{updatedAt}</Moment>;
-                </small>
-          
-              </Card.Footer>
-            </Card>
-
-         
               <>
                 <Button
-                  onClick={() => {
-                    getProgramById(id);
-                    setShowModal(true);
-                  }}
+                  onClick={() => addExerciseToProgram(id)}
                   style={styles.button}
                   variant="warning"
                 >
                   Add exercises to program
                 </Button>
                 <Button
-                  onClick={() => getProgramById(id)}
+                  onClick={() => updateDescription(id)}
                   style={styles.button}
                   variant="warning"
                 >
@@ -118,20 +116,15 @@ const ProgramList = observer(() => {
                   Delete program
                 </Button>
               </>
-            
-          </div>
-        )
-      )}
+            </div>
+          )
+        )}
       <ProgramEditor show={show} setShow={setShow} />
-      <ExerciseToProgramEditor
-        showModal={showModal}
-        setShowModal={setShowModal}
-      />
+      <ExerciseToProgramEditor show={showModal} setShow={setShowModal} />
     </>
   );
 });
 
 export default ProgramList;
-
 
 

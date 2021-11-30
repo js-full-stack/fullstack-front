@@ -27,6 +27,8 @@ export const ProgramModel = types.model("Program", {
     phone: types.optional(types.string, ""),
   }),
   isSubscribe: types.optional(types.boolean, false),
+  isAnySubscribers: types.optional(types.boolean, false),
+
   exercises: types.optional(types.array(ExerciseModel), []),
 });
 
