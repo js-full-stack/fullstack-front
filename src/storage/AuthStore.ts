@@ -18,6 +18,7 @@ export const AuthStore = types
   .model({
     currentUser: types.maybe(UserModel),
     allUsers: types.array(UserModel),
+    errorMessages: types.optional(types.array(types.string), []),
   })
   // !Register
   .actions((self) => {
@@ -29,14 +30,18 @@ export const AuthStore = types
       password: string,
       role: string
     ) {
-      yield axios.post("/auth/register", {
-        firstName,
-        lastName,
-        email,
-        phone,
-        password,
-        role,
-      });
+      try {
+        yield axios.post("/auth/register", {
+          firstName,
+          lastName,
+          email,
+          phone,
+          password,
+          role,
+        });
+      } catch (error) {
+        console.log("errrrror", error);
+      }
     });
 
     // !Login

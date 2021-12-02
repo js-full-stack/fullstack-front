@@ -5,7 +5,7 @@ import FloatingLabel from "react-bootstrap/FloatingLabel";
 
 //
 import { observer } from "mobx-react-lite";
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useStores } from "../../connection/useStore";
 import { useNavigate } from "react-router";
@@ -39,20 +39,28 @@ const FormLogin = observer(() => {
 
       authStore.currentUser && navigate("/program");
     } catch (error) {
-      console.log(error);
+      if (email === "" || password === "") {
+        return toast.warn("Please, fill all fields", {
+          autoClose: 2500,
+        });
+      }
+
+      return toast.warn("Wrong email or password", {
+        autoClose: 2500,
+      });
     }
   };
 
   return (
     <Form onSubmit={handleSubmit} style={styles.form}>
-      <FloatingLabel label="Email address" className="mb-2">
+      <FloatingLabel label="Email address" className="mb-4">
         <Form.Control
           onChange={handleChangeEmail}
           type="email"
           placeholder="Email"
         />
       </FloatingLabel>
-      <FloatingLabel label="Password" className="mb-2">
+      <FloatingLabel label="Password" className="mb-4">
         <Form.Control
           onChange={handleChangePassword}
           type="password"
@@ -60,7 +68,7 @@ const FormLogin = observer(() => {
         />
       </FloatingLabel>
 
-      <Button variant="primary" type="submit">
+      <Button variant="primary" type="submit" size="lg">
         Submit
       </Button>
     </Form>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { flow, types } from "mobx-state-tree";
+import { number } from "mobx-state-tree/dist/internal";
 import { toast } from "react-toastify";
 
 // !Exercise model
@@ -9,6 +10,11 @@ const ExerciseModel = types.model({
   createdAt: types.string,
   updatedAt: types.string,
   id: types.identifierNumber,
+});
+
+const ExerciseToProgramModel = types.model({
+  exercicseId: types.number,
+  programId: types.number,
 });
 
 // !Program model
@@ -36,7 +42,8 @@ export const ProgramModel = types.model("Program", {
 export const ProgramStore = types
   .model({
     programs: types.array(ProgramModel),
-    currentProgram: types.maybe(ProgramModel),
+    currentProgram: types.maybeNull(ProgramModel),
+    selectedExercisesIds: types.optional(types.array(types.number), []),
   })
 
   .actions((self) => {
@@ -85,22 +92,14 @@ export const ProgramStore = types
         price,
         duration,
       });
-      console.log("data", data);
+
       const updatedData: any = self.programs.map((program) => {
         return program.id === programId ? data : program;
       });
 
-      self.programs = updatedData;
+      console.log("updatedData:", updatedData);
 
-      const addExerciseToProgram = flow(function* (
-        programId: number,
-        exerciseId: number[]
-      ) {
-        yield axios.post("/exercise/to-program", {
-          programId,
-          exerciseId,
-        });
-      });
+      self.programs = updatedData;
     });
 
     const subscribeUserToProgram = flow(function* (programId: number) {
@@ -128,6 +127,19 @@ export const ProgramStore = types
       self.programs = updatedProgramStatus;
     });
 
+    const addExerciseToProgram = flow(function* (
+      programId: number,
+      exercisesId: number[]
+    ) {
+      const { data } = yield axios.post("/exercise/to-program", {
+        programId,
+        exercisesId,
+      });
+      const result = data.map((item: any) => item);
+
+      // self.selectedExercisesIds;
+    });
+
     return {
       addProgram,
       deleteProgram,
@@ -136,6 +148,7 @@ export const ProgramStore = types
       getAllPrograms,
       subscribeUserToProgram,
       unsubscribeUserFromProgram,
+      addExerciseToProgram,
     };
   });
 
@@ -174,7 +187,7 @@ export const ExerciseStore = types
       self.currentExercise = data;
     });
 
-    //  !Update exrrcise
+    //  !Update exercise
     const updateExercise = flow(function* (
       exerciseId: number,
       { name, description }

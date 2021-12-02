@@ -26,8 +26,7 @@ const App = observer(() => {
   const authStore = useStores().auth;
 
   useEffect(() => {
-    // authStore.getAllUsers();
-    authStore.getCurrentUser();
+    localStorage.getItem("token") && authStore.getCurrentUser();
   }, []);
   return (
     <>
@@ -41,6 +40,7 @@ const App = observer(() => {
             <Route element={<PrivateRoute />}>
               <Route path="/program" element={<ProgramView />} />
             </Route>
+
             <Route element={<PrivateRoute />}>
               <Route path="/exercise" element={<ExerciseView />} />
             </Route>

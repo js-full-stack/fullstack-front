@@ -6,6 +6,7 @@ import Modal from "react-bootstrap/Modal";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useStores } from "../../connection/useStore";
+import { toast } from "react-toastify";
 
 const styles = {
   form: {
@@ -50,8 +51,14 @@ const ExerciseEditor = observer(({ show, setShow }: ChildProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (name === "" || description === "") {
+      return toast.warn("All fields must be filled", {
+        autoClose: 2500,
+      });
+    }
+
     if (exerciseStore.currentExercise) {
-      onUpdateExercise(exerciseStore.currentExercise.id);
+      await onUpdateExercise(exerciseStore.currentExercise.id);
     }
     setShow(false);
   };

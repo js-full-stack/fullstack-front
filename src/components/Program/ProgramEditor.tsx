@@ -5,6 +5,7 @@ import Stack from "react-bootstrap/Stack";
 import { useState } from "react";
 import { useStores } from "../../connection/useStore";
 import { observer } from "mobx-react-lite";
+import { toast } from "react-toastify";
 
 interface ChildProps {
   setShow: any;
@@ -58,6 +59,12 @@ const ProgramEditor = observer(({ show, setShow }: ChildProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (name === "" || description === "" || price === 0 || duration === 0) {
+      return toast.warn("All fields must be filled", {
+        autoClose: 2500,
+      });
+    }
+
     if (programStore.currentProgram) {
       onUpdateProgram(programStore.currentProgram.id);
     }
@@ -108,7 +115,7 @@ const ProgramEditor = observer(({ show, setShow }: ChildProps) => {
                 defaultValue={programStore.currentProgram?.duration}
               />
             </Form.Group>
-  
+
             <Stack direction="horizontal" gap={3}>
               <Button type="submit" variant="primary">
                 Save changes
@@ -117,7 +124,6 @@ const ProgramEditor = observer(({ show, setShow }: ChildProps) => {
                 Reset
               </Button>
             </Stack>
-    
           </Form>
         </Modal.Body>
       </Modal>

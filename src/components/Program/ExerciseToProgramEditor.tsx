@@ -1,3 +1,4 @@
+import "./Programs.scss";
 // !Bootstrap
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -10,16 +11,6 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useStores } from "../../connection/useStore";
 
-const styles = {
-  form: {
-    marginTop: 15,
-  },
-  buttonModal: {
-    marginTop: 15,
-    marginBottom: 15,
-  },
-};
-
 interface ChildProps {
   show: boolean;
   setShow: any;
@@ -27,43 +18,61 @@ interface ChildProps {
 
 const ExerciseToProgramEditor = observer(({ show, setShow }: ChildProps) => {
   const exerciseStore = useStores().exercise;
+  const programStore = useStores().program;
   const [value, setValue] = useState([]);
-
-  useEffect(() => {
-    exerciseStore.getAllExercises();
-  }, []);
 
   const handleChange = (val: any) => setValue(val);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const programId = programStore.currentProgram?.id;
+
+    if (programId) {
+      await programStore.addExerciseToProgram(programId, value);
+    }
+
     setShow(false);
+    setValue([]);
   };
+
+  const onCloseModal = () => {
+    setShow(false);
+    setValue([]);
+  };
+
+  useEffect(() => {
+    exerciseStore.getAllExercises();
+  }, []);
 
   return (
     <div>
-      <Modal
-        show={show}
-        onHide={() => setShow(false)}
-        dialogClassName="modal-90w"
-      >
+      <Modal show={show} onHide={onCloseModal} size="sm">
         <Modal.Body>
-          <Form onSubmit={handleSubmit} style={styles.form}>
+          <Form onSubmit={handleSubmit} className="formExerciseToProgram">
             <ToggleButtonGroup
               type="checkbox"
               value={value}
               vertical={true}
               onChange={handleChange}
+              className="toggleButtonGroup"
             >
               {exerciseStore.exercises.map(({ name, id }) => (
-                <ToggleButton key={id} id={name} value={name}>
+                <ToggleButton
+                  key={id}
+                  id={id.toString()}
+                  value={id}
+                  className="toggleButton"
+                  variant="primary"
+                >
                   {name}
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
-            <Button variant="primary" type="submit">
-              Submit
-            </Button>
+            <Modal.Footer>
+              <Button variant="warning" type="submit">
+                Save exercises
+              </Button>
+            </Modal.Footer>
           </Form>
         </Modal.Body>
       </Modal>

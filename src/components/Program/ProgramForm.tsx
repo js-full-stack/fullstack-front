@@ -7,6 +7,7 @@ import Modal from "react-bootstrap/Modal";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useStores } from "../../connection/useStore";
+import { toast } from "react-toastify";
 
 const styles = {
   form: {
@@ -48,9 +49,27 @@ const ProgramForm = observer(() => {
     setDuration(Number(value));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    programStore.addProgram(name, description, price, duration);
+    if (name === "" || description === "" || price === 0 || duration === 0) {
+      return toast.warn("All fields must be filled", {
+        autoClose: 2500,
+      });
+    }
+
+    if (description.length < 20) {
+      return toast.warn(
+        "Description must be longer than or equal to 20 characters ",
+        {
+          autoClose: 2500,
+        }
+      );
+    }
+    await programStore.addProgram(name, description, price, duration);
+    setName("");
+    setDescription("");
+    setPrice(0);
+    setDuration(0);
     setShow(false);
   };
 

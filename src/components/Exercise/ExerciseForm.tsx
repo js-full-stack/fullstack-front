@@ -7,6 +7,7 @@ import Modal from "react-bootstrap/Modal";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useStores } from "../../connection/useStore";
+import { toast } from "react-toastify";
 
 const styles = {
   form: {
@@ -19,7 +20,7 @@ const styles = {
 };
 
 const ExerciseForm = observer(() => {
-  const store = useStores().exercise;
+  const exerciseStore = useStores().exercise;
 
   const [show, setShow] = useState(false);
 
@@ -36,9 +37,24 @@ const ExerciseForm = observer(() => {
     setDescription(value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    store.addExercise(name, description);
+
+    if (name === "" || description === "") {
+      return toast.warn("All fields must be filled", {
+        autoClose: 2500,
+      });
+    }
+
+    if (description.length < 20) {
+      return toast.warn(
+        "Description must be longer than or equal to 20 characters ",
+        {
+          autoClose: 2500,
+        }
+      );
+    }
+    await exerciseStore.addExercise(name, description);
     setShow(false);
   };
 

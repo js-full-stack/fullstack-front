@@ -35,6 +35,7 @@ const ProgramList = observer(() => {
   const authStore = useStores().auth;
   const [show, setShow] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [currentProgramId, setCurrentProgramId] = useState(0);
 
   const updateDescription = async (id: number) => {
     await programsStore.getProgramById(id);
@@ -58,8 +59,6 @@ const ProgramList = observer(() => {
           <AvailablePrograms />
         </>
       )}
-      {/* <CouchPrograms setShow={setShow}  
-        setShowModal={setShowModal}/> */}
 
       {authStore.currentUser?.role === "couch" &&
         programsStore.programs.map(
@@ -71,14 +70,15 @@ const ProgramList = observer(() => {
             price,
             createdAt,
             updatedAt,
+            isAnySubscribers,
           }) => (
             <div key={id}>
               <Card border="secondary">
                 <Card.Body>
                   <Card.Title>{name}</Card.Title>
                   <Card.Text>Description: {description}</Card.Text>
-                  <Card.Text>Duration {duration} hours </Card.Text>
                   <Card.Text>Price: {price}$ </Card.Text>
+                  <Card.Text>Duration: {duration} hours </Card.Text>
                 </Card.Body>
                 <Card.Footer>
                   <small style={styles.cardFooter} className="text-muted">
@@ -108,13 +108,20 @@ const ProgramList = observer(() => {
                 >
                   Update description
                 </Button>
-                <Button
-                  onClick={() => programsStore.deleteProgram(id)}
-                  style={styles.button}
-                  variant="danger"
-                >
-                  Delete program
-                </Button>
+
+                {isAnySubscribers ? (
+                  <Button disabled variant="danger" style={styles.button}>
+                    Delete Program
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => programsStore.deleteProgram(id)}
+                    style={styles.button}
+                    variant="danger"
+                  >
+                    Delete program
+                  </Button>
+                )}
               </>
             </div>
           )

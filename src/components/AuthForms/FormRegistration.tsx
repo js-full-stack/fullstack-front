@@ -2,9 +2,10 @@
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
+import classNames from "classnames";
 
 //
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useStores } from "../../connection/useStore";
@@ -65,20 +66,23 @@ const FormRegistration = observer(() => {
     setRole(value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    store.register(firstName, lastName, email, phone, password, role);
 
-    // if (!store.currentUser) {
-    // return toast.warning("Wrong data registration");
-    // } else {
-    // }
+    if (!firstName || !lastName || !email || !phone || !password) {
+      return toast.warn("All fields must be filled", {
+        autoClose: 2500,
+      });
+    }
+
+    await store.register(firstName, lastName, email, phone, password, role);
+
     navigate("/login");
   };
 
   return (
     <Form onSubmit={handleSubmit} style={styles.form}>
-      <FloatingLabel label="First name" className="mb-2">
+      <FloatingLabel label="First name" className="mb-4">
         <Form.Control
           onChange={handleChangeName}
           name="first_name"
@@ -86,7 +90,7 @@ const FormRegistration = observer(() => {
           placeholder="first name"
         />
       </FloatingLabel>
-      <FloatingLabel label="Last name" className="mb-2">
+      <FloatingLabel label="Last name" className="mb-4">
         <Form.Control
           onChange={handleChangeName}
           name="last_name"
@@ -95,28 +99,28 @@ const FormRegistration = observer(() => {
         />
       </FloatingLabel>
 
-      <FloatingLabel label="Phone number" className="mb-2">
+      <FloatingLabel label="Phone number" className="mb-4">
         <Form.Control
           onChange={handleChangePhone}
           type="tel"
           placeholder="Phone"
         />
       </FloatingLabel>
-      <FloatingLabel label="Email address" className="mb-2">
+      <FloatingLabel label="Email address" className="mb-4">
         <Form.Control
           onChange={handleChangeEmail}
           type="email"
           placeholder="Email"
         />
       </FloatingLabel>
-      <FloatingLabel label="Password" className="mb-2">
+      <FloatingLabel label="Password" className="mb-4">
         <Form.Control
           onChange={handleChangePassword}
           type="password"
           placeholder="Password"
         />
       </FloatingLabel>
-      <FloatingLabel label="Choose role" className="mb-2">
+      <FloatingLabel label="Choose role" className="mb-4">
         <Form.Select onChange={handleChangeRole}>
           <option defaultValue="athlete">Athlete</option>
           <option value="couch">Couch</option>
